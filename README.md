@@ -1,2 +1,3 @@
 # weekly44
-learning web3
+
+learning GraphQL
