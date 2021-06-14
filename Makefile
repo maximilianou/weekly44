@@ -11,6 +11,10 @@ step00 view-hostname:
 	@echo $(servers-exec-cmd)
 	@echo '$(servers-exec-usr-id)'
 
+
+step200 graphql-api-init:
+	
+
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
 #step02 api-create: app
