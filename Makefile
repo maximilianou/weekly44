@@ -13,7 +13,22 @@ step00 view-hostname:
 
 
 step200 graphql-api-init:
+	cd ../ && git clone https://github.com/prisma/prisma-examples
+	mv -R ../prisma-examples/typescript/graphql-auth server
+	cd server && npm i
 	
+step201 graphql-ui-init:
+	npx create-react-app ui --template typescript
+
+step202 graphql-compose-start:
+	docker-compose -f docker/docker-compose.yml up --remove-orphans
+
+step203 docker-psql-ls:
+	docker exec docker_db_1 psql -Upostgres -a postgres -c '\l'	
+
+step204 docker-psql-exec-sql:
+	docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql
+	@##docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql 2> docker/sql/error.log
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
@@ -25,6 +40,8 @@ step200 graphql-api-init:
 #	cd app/api && ./node_modules/.bin/ts-node src/scripts/generate.ts
 #step05 api-test:
 #	curl -X POST http://localhost:4000/graphql -H "Content-Type: application/json" -d '{ "query":"query { article(  id: 1 ){ id, title, content } }"}'
+
+
 
 
 #ssh-manual-root-update: ## debian - dev-user:staff /usr/loca/bin
@@ -60,13 +77,15 @@ step22 ssh-docker-test:
 #step26 ssh-kubectl-test:
 #	$(foreach server, $(servers),  ssh $(user)@$(server) "kubectl version";)
 
-step30 ui-create:
-	mkdir ui; cd ui; npm init -y; mkdir public; mkdir src; touch public/index.html; \
-	npm i -D typescript webpack webpack-cli http-server react react-dom @types/react @types/react-dom; \
-	npx tsc --init ;\
-	echo 'UI - Created - React Typescript';
-	
+#step30 ui-create:
+#	mkdir ui; cd ui; npm init -y; mkdir public; mkdir src; touch public/index.html; \
+#	npm i -D typescript webpack webpack-cli http-server react react-dom @types/react @types/react-dom; \
+#	npx tsc --init ;\
+#	echo 'UI - Created - React Typescript';
 
+
+
+## SSH Multi Server execute command
 step100 ssh-arkade:
 	$(foreach server, $(servers),  ssh $(user)@$(server) "curl -sLS https://dl.get-arkade.dev | sh";)
 
@@ -106,6 +125,10 @@ step154 kubectl-get-componentstatus:
 
 step170 kubectl-run-busybox:
 	kubectl run -it --rm shell1 --image busybox
+
+step171 docker-haproxy-sh:
+	docker run -it haproxy:alpine /bin/sh
+	
 
 step180 kubectl-watch-get-pods:
 	watch kubectl get pods -o wide
