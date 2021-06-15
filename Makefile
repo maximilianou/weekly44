@@ -29,6 +29,10 @@ step203 docker-psql-ls:
 step204 docker-psql-exec-sql:
 	docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql
 	@##docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql 2> docker/sql/error.log
+step205 docker-pg_dump:
+	docker exec docker_db_1 pg_dump -Upostgres -a twitter_clone > docker/sql/create_tables.sql
+
+
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
