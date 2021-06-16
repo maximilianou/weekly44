@@ -81,19 +81,38 @@ step202 graphql-compose-start:
 	docker-compose -f docker/docker-compose.yml up --remove-orphans
 
 step203 docker-psql-ls:
-	docker exec docker_db_1 psql -Upostgres -a postgres -c '\l'	
+	docker exec docker_db_1 psql -Upostgres -d postgres -c '\l'	
+
+step203-t docker-psql-ls-twitter:
+	docker exec docker_db_1 psql -Upostgres -d twitter-clone -c '\l'	
 
 step204 docker-psql-exec-sql:
-	docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql
-	@##docker exec docker_db_1 psql -Upostgres -a postgres --file=/sql/input.sql > docker/sql/output.sql 2> docker/sql/error.log
+	docker exec docker_db_1 psql -Upostgres -d postgres --file=/sql/input.sql > docker/sql/output.sql
+	@##docker exec docker_db_1 psql -Upostgres -d postgres --file=/sql/input.sql > docker/sql/output.sql 2> docker/sql/error.log
 step205 docker-pg_dump:
-	docker exec docker_db_1 pg_dump -Upostgres -a twitter_clone > docker/sql/create_tables.sql
+	docker exec docker_db_1 pg_dump -Upostgres -d twitter_clone > docker/sql/create_tables.sql
 
 step206 api-prisma-generate:
 	cd twitter-clone/api && npx prisma generate
 
-step207 api-prisma-migrate:
+step207 api-prisma-migrate-dev:
 	cd twitter-clone/api && npx prisma migrate dev --name init
+
+step208 api-prisma-migrate-up:
+	cd twitter-clone/api && npx prisma migrate resolve --applied 20210615195142_init
+
+step209 api-prisma-introspect: 
+	cd twitter-clone/api && npx prisma introspect ## check prisma - db
+
+step210 api-npm-prisma-update: 
+	cd twitter-clone/api && npm i -D prisma && npm i @prisma/client && npm audit fix;
+
+step211 docker-psql-drop-database:
+	docker exec docker_db_1 psql -Upostgres -d postgres -c "DROP DATABASE twitter_clone;"	
+
+step212 docker-system-prune:
+	docker system prune -af	
+
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
