@@ -18,14 +18,44 @@
 
 3. https://www.prisma.io/docs/concepts/database-connectors/postgresql
 
-- 
+- step206 generate then step207 migrate database to postgres
+
+```
+:~/projects/weekly44$ make step207
+cd twitter-clone/api && npx prisma migrate dev --name init
+Environment variables loaded from prisma/.env
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "twitter-clone", schema "public" at "localhost:5432"
+
+PostgreSQL database twitter-clone created at localhost:5432
+
+The following migration(s) have been created and applied from new schema changes:
+
+migrations/
+  └─ 20210615195142_init/
+    └─ migration.sql
+
+Your database is now in sync with your schema.
+
+✔ Generated Prisma Client (2.24.1) to ./node_modules/@prisma/client in 100ms
+
+
+┌─────────────────────────────────────────────────────────┐
+│  Update available 2.24.1 -> 2.25.0                      │
+│  Run the following to update                            │
+│    npm i --save-dev prisma                              │
+│    npm i @prisma/client                                 │
+└─────────────────────────────────────────────────────────┘
+
+:~/projects/weekly44$ npm i -D prisma; npm i @prisma/client;
+```
 
 
 ### Step by Step, Makefile to have clear doc/action running system. 
 #### Looking to have X as Code ( yes, yes, yes.. long trip, but here we are.. )
 ---
 - Makefile
-```
+```sh
 include .env
 #user=..
 #servers=..
@@ -39,14 +69,13 @@ step00 view-hostname:
 	@echo $(servers-exec-cmd)
 	@echo '$(servers-exec-usr-id)'
 
-
 step200 graphql-api-init:
 	cd ../ && git clone https://github.com/prisma/prisma-examples
-	mv -R ../prisma-examples/typescript/graphql-auth server
-	cd server && npm i
+	mv -R ../prisma-examples/typescript/graphql-auth api
+	cd api && npm i
 	
 step201 graphql-ui-init:
-	npx create-react-app ui --template typescript
+	cd twitter-clone && npx create-react-app ui --template typescript
 
 step202 graphql-compose-start:
 	docker-compose -f docker/docker-compose.yml up --remove-orphans
@@ -60,7 +89,11 @@ step204 docker-psql-exec-sql:
 step205 docker-pg_dump:
 	docker exec docker_db_1 pg_dump -Upostgres -a twitter_clone > docker/sql/create_tables.sql
 
+step206 api-prisma-generate:
+	cd twitter-clone/api && npx prisma generate
 
+step207 api-prisma-migrate:
+	cd twitter-clone/api && npx prisma migrate dev --name init
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
@@ -72,9 +105,6 @@ step205 docker-pg_dump:
 #	cd app/api && ./node_modules/.bin/ts-node src/scripts/generate.ts
 #step05 api-test:
 #	curl -X POST http://localhost:4000/graphql -H "Content-Type: application/json" -d '{ "query":"query { article(  id: 1 ){ id, title, content } }"}'
-
-
-
 
 #ssh-manual-root-update: ## debian - dev-user:staff /usr/loca/bin
 #	apt -y update; apt -y upgrade;
@@ -115,9 +145,7 @@ step22 ssh-docker-test:
 #	npx tsc --init ;\
 #	echo 'UI - Created - React Typescript';
 
-
-
-## SSH Multi Server execute command
+## SSH Multi Server commands execute 
 step100 ssh-arkade:
 	$(foreach server, $(servers),  ssh $(user)@$(server) "curl -sLS https://dl.get-arkade.dev | sh";)
 
@@ -133,7 +161,6 @@ step103 ssh-ark-k3d:
 step104 ssh-k3d-test:
 	$(foreach server, $(servers),  ssh $(user)@$(server) "k3d version";)
 
-
 ## Default usage k3d - kubernetes cluster fast, simple, minimal
 k3d-cluster-create:
 	k3d cluster create
@@ -141,7 +168,6 @@ kubectl-cluster-info:
 	kubectl cluster-info
 k3d-cluster-delete:
 	k3d cluster delete
-
 
 ## Kubernetes - interaction - cleaning
 step150 kubectl-get-nodes:
@@ -161,7 +187,6 @@ step170 kubectl-run-busybox:
 step171 docker-haproxy-sh:
 	docker run -it haproxy:alpine /bin/sh
 	
-
 step180 kubectl-watch-get-pods:
 	watch kubectl get pods -o wide
 

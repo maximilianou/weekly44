@@ -11,14 +11,13 @@ step00 view-hostname:
 	@echo $(servers-exec-cmd)
 	@echo '$(servers-exec-usr-id)'
 
-
 step200 graphql-api-init:
 	cd ../ && git clone https://github.com/prisma/prisma-examples
-	mv -R ../prisma-examples/typescript/graphql-auth server
-	cd server && npm i
+	mv -R ../prisma-examples/typescript/graphql-auth api
+	cd api && npm i
 	
 step201 graphql-ui-init:
-	npx create-react-app ui --template typescript
+	cd twitter-clone && npx create-react-app ui --template typescript
 
 step202 graphql-compose-start:
 	docker-compose -f docker/docker-compose.yml up --remove-orphans
@@ -32,7 +31,11 @@ step204 docker-psql-exec-sql:
 step205 docker-pg_dump:
 	docker exec docker_db_1 pg_dump -Upostgres -a twitter_clone > docker/sql/create_tables.sql
 
+step206 api-prisma-generate:
+	cd twitter-clone/api && npx prisma generate
 
+step207 api-prisma-migrate:
+	cd twitter-clone/api && npx prisma migrate dev --name init
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	
@@ -44,9 +47,6 @@ step205 docker-pg_dump:
 #	cd app/api && ./node_modules/.bin/ts-node src/scripts/generate.ts
 #step05 api-test:
 #	curl -X POST http://localhost:4000/graphql -H "Content-Type: application/json" -d '{ "query":"query { article(  id: 1 ){ id, title, content } }"}'
-
-
-
 
 #ssh-manual-root-update: ## debian - dev-user:staff /usr/loca/bin
 #	apt -y update; apt -y upgrade;
@@ -87,9 +87,7 @@ step22 ssh-docker-test:
 #	npx tsc --init ;\
 #	echo 'UI - Created - React Typescript';
 
-
-
-## SSH Multi Server execute command
+## SSH Multi Server commands execute 
 step100 ssh-arkade:
 	$(foreach server, $(servers),  ssh $(user)@$(server) "curl -sLS https://dl.get-arkade.dev | sh";)
 
@@ -105,7 +103,6 @@ step103 ssh-ark-k3d:
 step104 ssh-k3d-test:
 	$(foreach server, $(servers),  ssh $(user)@$(server) "k3d version";)
 
-
 ## Default usage k3d - kubernetes cluster fast, simple, minimal
 k3d-cluster-create:
 	k3d cluster create
@@ -113,7 +110,6 @@ kubectl-cluster-info:
 	kubectl cluster-info
 k3d-cluster-delete:
 	k3d cluster delete
-
 
 ## Kubernetes - interaction - cleaning
 step150 kubectl-get-nodes:
@@ -133,7 +129,6 @@ step170 kubectl-run-busybox:
 step171 docker-haproxy-sh:
 	docker run -it haproxy:alpine /bin/sh
 	
-
 step180 kubectl-watch-get-pods:
 	watch kubectl get pods -o wide
 
