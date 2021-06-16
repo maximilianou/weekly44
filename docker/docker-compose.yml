@@ -6,8 +6,17 @@ services:
   db:
     image: postgres:13-alpine
     #restart: always
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10    
     environment:
+      POSTGRES_USER: postgres
       POSTGRES_PASSWORD: example
+      APP_DB_USER: dev_user
+      APP_DB_PASS: dev_user
+      APP_DB_NAME: twitter_clone      
     ports:
       - "5432:5432"
 #    logging:
@@ -15,11 +24,9 @@ services:
 #        max-size: 10m
 #        max-file: "3"
     volumes: 
+      - ./data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d/
       - ./sql:/sql
-#     - ./data:/var/lib/postgresql/data
-#      # copy the sql script to create tables
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
 #      # copy the sql script to fill tables
 #      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
-
 
