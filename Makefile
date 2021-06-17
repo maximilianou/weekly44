@@ -17,10 +17,11 @@ step200 graphql-api-init:
 	cd api && npm i
 	
 step201 graphql-ui-init:
-	cd twitter-clone && npx create-react-app ui --template typescript
+	cd twitter-clone && npm uninstall -g create-react-app && npx create-react-app ui --template typescript
 
 step202 graphql-compose-start:
 	docker-compose -f docker/docker-compose.yml up --remove-orphans
+	#docker-compose --verbose -f docker/docker-compose.yml up --remove-orphans
 
 step203 docker-psql-ls:
 	docker exec docker_db_1 psql -Upostgres -d postgres -c '\l'	
@@ -54,6 +55,10 @@ step211 docker-psql-drop-database:
 
 step212 docker-system-prune:
 	docker system prune -af	
+
+step213 graphql-ui-install:
+	cd twitter-clone/ui && npm i @apollo/client graphql && npm audit fix --force ;
+
 
 
 #step01 app: ## Nestjs - GraphQL

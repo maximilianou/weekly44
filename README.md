@@ -1,57 +1,98 @@
 # weekly44
 
-#### Looking to have X as Code ( yes, yes, yes.. long trip, but here we are.. )
+#### Looking to have X as Code 
 
-
-## learning GraphQL 
-### mini fullstack nodejs graphql sample books/authors
+## So GraphQL 
+### mini fullstack nodejs graphql sample twitter clone
 
 
 1. https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-auth/prisma
 
-- git clone
-
-- npm i
 
 2. npx creat-react-app ui --template typescript
 
 
 3. https://www.prisma.io/docs/concepts/database-connectors/postgresql
 
-- step206 generate then step207 migrate database to postgres
+---
+### Local Environment - Postgres Api Ui ( alpine linux everywhere )
+---
+- docker-compose.yaml
+```yaml
+# Use postgres/example user/password credentials
+version: '3.9'
 
+services:
+
+  db:
+    image: postgres:13-alpine
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+      timeout: 45s
+      interval: 10s
+      retries: 10    
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      APP_DB_USER: dev_user
+      APP_DB_PASS: dev_user
+      APP_DB_NAME: twitter_clone      
+    ports:
+      - "5432:5432"
+    volumes: 
+      - ./data:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d/
+      - ./sql:/sql
+
+  api:
+    #build: 
+    #  context: ../twitter-clone/
+    #  dockerfile: api/Dockerfile.dev
+    #  target: dev
+    image: node:16-alpine
+    command: sh -c "npm install && npm run start"
+    working_dir: /api
+    container_name: twitter_clone_api
+    volumes:
+      - ../twitter-clone/api:/api
+      - ../twitter-clone/api/node_modules:/api/node_modules
+    ports:
+      - "4000:4000" 
+      - "49155:49153"
+    environment:
+      - NODE_ENV=dev
+    networks:
+      - default     
+
+  ui:
+    #build: 
+    #  context: ../twitter-clone/
+    #  dockerfile: ui/Dockerfile.dev
+    #  target: dev
+    image: node:16-alpine
+    command: sh -c "npm install && npm run start"
+    working_dir: /ui
+    container_name: twitter_clone_ui
+    volumes:
+      - ../twitter-clone/ui:/ui
+      - ../twitter-clone/ui/node_modules:/ui/node_modules
+    ports:
+      - "4244:3000" 
+      - "49153:49153"
+    environment:
+      - NODE_ENV=dev
+    networks:
+      - default     
+
+networks:
+  default:
 ```
-:~/projects/weekly44$ make step207
-cd twitter-clone/api && npx prisma migrate dev --name init
-Environment variables loaded from prisma/.env
-Prisma schema loaded from prisma/schema.prisma
-Datasource "db": PostgreSQL database "twitter-clone", schema "public" at "localhost:5432"
 
-PostgreSQL database twitter-clone created at localhost:5432
+### Makefile - Actions / Commands self documented for developers.
 
-The following migration(s) have been created and applied from new schema changes:
-
-migrations/
-  └─ 20210615195142_init/
-    └─ migration.sql
-
-Your database is now in sync with your schema.
-
-✔ Generated Prisma Client (2.24.1) to ./node_modules/@prisma/client in 100ms
-
-
-┌─────────────────────────────────────────────────────────┐
-│  Update available 2.24.1 -> 2.25.0                      │
-│  Run the following to update                            │
-│    npm i --save-dev prisma                              │
-│    npm i @prisma/client                                 │
-└─────────────────────────────────────────────────────────┘
-
-:~/projects/weekly44$ npm i -D prisma; npm i @prisma/client;
-```
-
-
+---
 ### Step by Step, Makefile to have clear doc/action running system. 
+
 #### Looking to have X as Code ( yes, yes, yes.. long trip, but here we are.. )
 ---
 - Makefile
@@ -75,10 +116,11 @@ step200 graphql-api-init:
 	cd api && npm i
 	
 step201 graphql-ui-init:
-	cd twitter-clone && npx create-react-app ui --template typescript
+	cd twitter-clone && npm uninstall -g create-react-app && npx create-react-app ui --template typescript
 
 step202 graphql-compose-start:
 	docker-compose -f docker/docker-compose.yml up --remove-orphans
+	#docker-compose --verbose -f docker/docker-compose.yml up --remove-orphans
 
 step203 docker-psql-ls:
 	docker exec docker_db_1 psql -Upostgres -d postgres -c '\l'	
@@ -113,6 +155,8 @@ step211 docker-psql-drop-database:
 step212 docker-system-prune:
 	docker system prune -af	
 
+step213 graphql-ui-install:
+	cd twitter-clone/ui && npm i @apollo/client graphql && npm audit fix --force ;
 
 #step01 app: ## Nestjs - GraphQL
 #	mkdir app	

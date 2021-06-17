@@ -30,3 +30,46 @@ services:
 #      # copy the sql script to fill tables
 #      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
 
+  api:
+    #build: 
+    #  context: ../twitter-clone/
+    #  dockerfile: api/Dockerfile.dev
+    #  target: dev
+    image: node:16-alpine
+    command: sh -c "npm install && npm run start"
+    working_dir: /api
+    container_name: twitter_clone_api
+    volumes:
+      - ../twitter-clone/api:/api
+      - ../twitter-clone/api/node_modules:/api/node_modules
+    ports:
+      - "4000:4000" 
+      - "49155:49153"
+    environment:
+      - NODE_ENV=dev
+    networks:
+      - default     
+
+  ui:
+    #build: 
+    #  context: ../twitter-clone/
+    #  dockerfile: ui/Dockerfile.dev
+    #  target: dev
+    image: node:16-alpine
+    command: sh -c "npm install && npm run start"
+    working_dir: /ui
+    container_name: twitter_clone_ui
+    volumes:
+      - ../twitter-clone/ui:/ui
+      - ../twitter-clone/ui/node_modules:/ui/node_modules
+    ports:
+      - "4244:3000" 
+      - "49153:49153"
+    environment:
+      - NODE_ENV=dev
+    networks:
+      - default     
+
+networks:
+  default:
+    
