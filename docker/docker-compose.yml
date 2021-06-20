@@ -2,59 +2,60 @@
 version: '3.9'
 
 services:
+#
+#  db:
+#    image: postgres:13-alpine
+#    #restart: always
+#    healthcheck:
+#      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
+#      timeout: 45s
+#      interval: 10s
+#      retries: 10    
+#    environment:
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: example
+#      APP_DB_USER: dev_user
+#      APP_DB_PASS: dev_user
+#      APP_DB_NAME: twitter_clone      
+#    ports:
+#      - "5432:5432"
+##    logging:
+##      options:
+##        max-size: 10m
+##        max-file: "3"
+#    volumes: 
+#      - ./data:/var/lib/postgresql/data
+#      - ./db:/docker-entrypoint-initdb.d/
+#      - ./sql:/sql
+##      # copy the sql script to fill tables
+##      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
 
-  db:
-    image: postgres:13-alpine
-    #restart: always
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres" ]
-      timeout: 45s
-      interval: 10s
-      retries: 10    
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: example
-      APP_DB_USER: dev_user
-      APP_DB_PASS: dev_user
-      APP_DB_NAME: twitter_clone      
-    ports:
-      - "5432:5432"
-#    logging:
-#      options:
-#        max-size: 10m
-#        max-file: "3"
-    volumes: 
-      - ./data:/var/lib/postgresql/data
-      - ./db:/docker-entrypoint-initdb.d/
-      - ./sql:/sql
-#      # copy the sql script to fill tables
-#      - ./sql/fill_tables.sql:/docker-entrypoint-initdb.d/fill_tables.sql
-
-  api:
-    #build: 
-    #  context: ../twitter-clone/
-    #  dockerfile: api/Dockerfile.dev
-    #  target: dev
-    image: node:16-alpine
-    command: sh -c "npm install && npm run start"
-    working_dir: /api
-    container_name: twitter_clone_api
-    volumes:
-      - ../twitter-clone/api:/api
-      - ../twitter-clone/api/node_modules:/api/node_modules
-    ports:
-      - "4000:4000" 
-      - "49155:49153"
-    environment:
-      - NODE_ENV=dev
-    networks:
-      - default     
+#  api:
+#    #build: 
+#    #  context: ../twitter-clone/
+#    #  dockerfile: api/Dockerfile.dev
+#    #  target: dev
+#    image: node:16-alpine
+#    command: sh -c "npm install && npm run start"
+#    working_dir: /api
+#    container_name: twitter_clone_api
+#    volumes:
+#      - ../twitter-clone/api:/api
+#      - ../twitter-clone/api/node_modules:/api/node_modules
+#    ports:
+#      - "4000:4000" 
+#      - "49155:49153"
+#    environment:
+#      - NODE_ENV=dev
+#    networks:
+#      - default     
 
   ui:
     #build: 
     #  context: ../twitter-clone/
     #  dockerfile: ui/Dockerfile.dev
     #  target: dev
+    # This the docker-compose.yaml, and this helps as to develop localy. just that!
     image: node:16-alpine
     command: sh -c "npm install && npm run start"
     working_dir: /ui

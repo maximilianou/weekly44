@@ -1,18 +1,6 @@
 # weekly44
 
-#### Looking to have X as Code 
-
-## So GraphQL 
-### mini fullstack nodejs graphql sample twitter clone
-
-
-1. https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-auth/prisma
-
-
-2. npx creat-react-app ui --template typescript
-
-
-3. https://www.prisma.io/docs/concepts/database-connectors/postgresql
+#### Looking to have X as Code, the WIP long trip.. 
 
 ---
 ### Local Environment - Postgres Api Ui ( alpine linux everywhere )

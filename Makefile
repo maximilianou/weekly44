@@ -48,7 +48,7 @@ step209 api-prisma-introspect:
 	cd twitter-clone/api && npx prisma introspect ## check prisma - db
 
 step210 api-npm-prisma-update: 
-	cd twitter-clone/api && npm i -D prisma && npm i @prisma/client && npm audit fix;
+	cd twitter-clone/api && npm i -D prisma && npm i @prisma/client 
 
 step211 docker-psql-drop-database:
 	docker exec docker_db_1 psql -Upostgres -d postgres -c "DROP DATABASE twitter_clone;"	
@@ -57,7 +57,7 @@ step212 docker-system-prune:
 	docker system prune -af	
 
 step213 graphql-ui-install:
-	cd twitter-clone/ui && npm i @apollo/client graphql && npm audit fix --force ;
+	cd twitter-clone/ui && npm i @apollo/client graphql
 
 
 
